@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:term_project/cons/colors.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
-  final DateTime selectedDate; // 선택한 날짜를 전달받음
+  final DateTime selectedDate; // 선택된 날짜
+  final DateTime? initialEndDate; // 초기 종료 날짜 (수정을 위한 매개변수)
+  final String? initialContent; // 초기 내용 (수정을 위한 매개변수)
 
   const ScheduleBottomSheet({
     required this.selectedDate,
+    this.initialEndDate,
+    this.initialContent,
     Key? key,
   }) : super(key: key);
 
@@ -14,8 +18,16 @@ class ScheduleBottomSheet extends StatefulWidget {
 }
 
 class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
-  final TextEditingController contentController = TextEditingController();
-  DateTime? selectedEndDate; // 종료 날짜 저장
+  late TextEditingController contentController;
+  DateTime? selectedEndDate;
+
+  @override
+  void initState() {
+    super.initState();
+    // 초기 값 설정
+    contentController = TextEditingController(text: widget.initialContent ?? '');
+    selectedEndDate = widget.initialEndDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +100,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   Future<void> pickEndDate() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedEndDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(3000),
     );
