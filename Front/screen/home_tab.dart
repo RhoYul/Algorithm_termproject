@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
           if (result != null) {
             setState(() {
-              schedules.add(result); // 저장된 일정 추가
+              schedules.add({...result, 'isCompleted': false}); // 기본 완료 상태 false
             });
           }
         },
@@ -67,6 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   return ScheduleCard(
                     endDate: schedule['endDate'], // 종료 날짜 전달
                     content: schedule['content'], // 일정 내용 전달
+                    isCompleted: schedule['isCompleted'], // 완료 상태 전달
+                    onToggleComplete: () => toggleComplete(index), // 완료 상태 변경 콜백
+                    onEdit: () => editSchedule(index, schedule), // 수정 기능 추가
                   );
                 },
               ),
@@ -81,5 +84,30 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       this.selectedDate = selectedDate;
     });
+  }
+
+  void toggleComplete(int index) {
+    setState(() {
+      schedules[index]['isCompleted'] = !schedules[index]['isCompleted']; // 완료 상태 토글
+    });
+  }
+
+  void editSchedule(int index, Map<String, dynamic> schedule) async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isDismissible: true,
+      builder: (_) => ScheduleBottomSheet(
+        selectedDate: schedule['selectedDate'],
+        initialEndDate: schedule['endDate'],
+        initialContent: schedule['content'],
+      ),
+      isScrollControlled: true,
+    );
+
+    if (result != null) {
+      setState(() {
+        schedules[index] = {...result, 'isCompleted': schedules[index]['isCompleted']};
+      });
+    }
   }
 }
