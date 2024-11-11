@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:term_project/screen//home_tab.dart'; // Home 화면
-import 'package:term_project/screen/todos_tab.dart'; // Todos 화면
-import 'package:term_project/screen/profile_tab.dart'; // Profile 화면
+import 'package:term_project/screen/home_tab.dart' as home_screen; // HomeScreen 별칭 추가
+import 'package:term_project/screen/todos_tab.dart';
+import 'package:term_project/screen/profile_tab.dart';
+import 'package:term_project/cons/colors.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0; // 현재 선택된 탭의 인덱스
   final List<Widget> _screens = [
-    HomeScreen(), // Home 화면
+    home_screen.HomeScreen(), // 별칭을 사용하여 HomeScreen 참조
     TodosTab(), // Todos 화면
     ProfileTab(), // Profile 화면
   ];
@@ -27,6 +28,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             _currentIndex = index; // 선택된 탭 업데이트
           });
         },
+        selectedItemColor: PRIMARY_COLOR, // 선택된 아이템 색상
+        unselectedItemColor: DARK_GREY_COLOR, // 선택되지 않은 아이템 색상
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
