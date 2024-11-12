@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ProfileTab extends StatelessWidget {
+class AlarmTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Alarm'),
       ),
       body: Center(
-        child: Text('Profile Screen'),
+        child: Text('Alarm Screen'),
       ),
     );
   }

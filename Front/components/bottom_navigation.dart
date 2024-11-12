@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:term_project/screen/home_tab.dart' as home_screen; // HomeScreen 별칭 추가
 import 'package:term_project/screen/todos_tab.dart';
-import 'package:term_project/screen/profile_tab.dart';
+import 'package:term_project/screen/alarm_tab.dart';
 import 'package:term_project/cons/colors.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   final List<Widget> _screens = [
     home_screen.HomeScreen(), // 별칭을 사용하여 HomeScreen 참조
     TodosTab(), // Todos 화면
-    ProfileTab(), // Profile 화면
+    AlarmTab(), // Alarm 화면
   ];
 
   @override
@@ -40,8 +40,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             label: 'Todos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.alarm),
+            label: 'Alarm',
           ),
         ],
       ),
