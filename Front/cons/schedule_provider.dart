@@ -28,8 +28,8 @@ class ScheduleProvider with ChangeNotifier {
   List<Map<String, dynamic>> getWeeklySchedules(DateTime startOfWeek, DateTime endOfWeek) {
     return _schedules.where((schedule) {
       final scheduleDate = schedule['selectedDate'] as DateTime;
-      return scheduleDate.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
-          scheduleDate.isBefore(endOfWeek.add(Duration(days: 1)));
+      return scheduleDate.isAtSameMomentAs(startOfWeek) || scheduleDate.isAtSameMomentAs(endOfWeek) ||
+          (scheduleDate.isAfter(startOfWeek) && scheduleDate.isBefore(endOfWeek));
     }).toList();
   }
 }

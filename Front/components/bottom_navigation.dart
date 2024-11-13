@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:term_project/screen/home_tab.dart' as home_screen; // HomeScreen 별칭 추가
-import 'package:term_project/screen/todos_tab.dart';
-import 'package:term_project/screen/alarm_tab.dart';
+import 'package:term_project/screen/settings_tab.dart';
+import 'package:term_project/screen/weekly_tab.dart';
+import 'package:term_project/screen/settings_tab.dart';
 import 'package:term_project/cons/colors.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
@@ -13,8 +14,8 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0; // 현재 선택된 탭의 인덱스
   final List<Widget> _screens = [
     home_screen.HomeScreen(), // 별칭을 사용하여 HomeScreen 참조
-    TodosTab(), // Todos 화면
-    AlarmTab(), // Alarm 화면
+    WeeklyTab(), // This Week 화면
+    SettingsTab(), // Alarm 화면
   ];
 
   @override
@@ -37,11 +38,11 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.check),
-            label: 'Todos',
+            label: 'Weekly',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.alarm),
-            label: 'Alarm',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
       ),

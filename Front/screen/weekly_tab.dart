@@ -3,15 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:term_project/cons/colors.dart';
 import 'package:term_project/cons/schedule_provider.dart';
 
-class TodosTab extends StatelessWidget {
+class WeeklyTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheduleProvider = Provider.of<ScheduleProvider>(context);
 
     // 오늘을 기준으로 한 주 범위 계산
     DateTime today = DateTime.now();
-    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1)); // 월요일
-    DateTime endOfWeek = startOfWeek.add(Duration(days: 6)); // 일요일
+    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1)); // Start of the week (Monday)
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 6)); // End of the week (Sunday)
 
     // 현재 주의 일정 필터링
     final weeklySchedules =
@@ -19,7 +19,7 @@ class TodosTab extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todos', style: TextStyle(color: Colors.white)),
+        title: Text('Weekly', style: TextStyle(color: Colors.white)),
         backgroundColor: PRIMARY_COLOR,
       ),
       body: SafeArea(
