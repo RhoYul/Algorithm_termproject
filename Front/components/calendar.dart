@@ -1,171 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:term_project/cons/colors.dart';
+import 'package:term_project/cons/schedule_provider.dart';
 
-class MainCalander extends StatefulWidget {
+class MainCalendar extends StatelessWidget {
   final DateTime selectedDate;
   final Function(DateTime, DateTime) onDaySelected;
 
-  MainCalander({
-    required this.selectedDate,
-    required this.onDaySelected,
-  });
-
-  @override
-  _MainCalanderState createState() => _MainCalanderState();
-}
-
-class _MainCalanderState extends State<MainCalander> {
-  late final ValueNotifier<DateTime> _focusedDay;
-  late final ValueNotifier<DateTime?> _selectedDay;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusedDay = ValueNotifier(widget.selectedDate);
-    _selectedDay = ValueNotifier(widget.selectedDate);
-  }
-
-  @override
-  void dispose() {
-    _focusedDay.dispose();
-    _selectedDay.dispose();
-    super.dispose();
-  }
+  MainCalendar({required this.selectedDate, required this.onDaySelected});
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now();
+    final scheduleProvider = Provider.of<ScheduleProvider>(context);
+
+    // Generate markers for days with schedules
+    final markers = <DateTime, List>{};
+    for (var schedule in scheduleProvider.schedules) {
+      final date = schedule['selectedDate'] as DateTime;
+      markers[date] = (markers[date] ?? [])..add(schedule);
+    }
+
+    DateTime today = DateTime.now();
 
     return TableCalendar(
-      firstDay: DateTime.utc(2010, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: _focusedDay.value,
-      selectedDayPredicate: (day) => isSameDay(_selectedDay.value, day),
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _selectedDay.value = selectedDay;
-          _focusedDay.value = focusedDay;
-          widget.onDaySelected(selectedDay, focusedDay);
-        });
-      },
-      headerStyle: HeaderStyle(
-        titleCentered: true,
-        formatButtonVisible: false,
-        titleTextStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16.0,
-          color: DARK_GREY_COLOR,
-        ),
-      ),
+      focusedDay: selectedDate,
+      firstDay: DateTime(2000),
+      lastDay: DateTime(2100),
+      selectedDayPredicate: (day) =>
+      isSameDay(selectedDate, day) && !isSameDay(day, today),
+      onDaySelected: onDaySelected,
       calendarStyle: CalendarStyle(
+        // 스타일: 오늘 날짜
         todayDecoration: BoxDecoration(
-          color: PRIMARY_COLOR,
+          color: PRIMARY_COLOR, // 항상 진한 민트색
           shape: BoxShape.circle,
         ),
-        selectedDecoration: BoxDecoration(
-          color: LIGHT_PRIMARY_COLOR,
-          shape: BoxShape.circle,
+        todayTextStyle: TextStyle(
+          color: Colors.white, // 흰색 텍스트
+          fontWeight: FontWeight.bold,
         ),
-        weekendTextStyle: TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.w600,
-        ),
-        defaultTextStyle: TextStyle(
-          color: DARK_GREY_COLOR,
-          fontWeight: FontWeight.w600,
-        ),
-        outsideDaysVisible: false,
-      ),
-      calendarBuilders: CalendarBuilders(
-        // 일반 날짜
-        defaultBuilder: (context, day, focusedDay) {
-          return Center(
-            child: Text(
-              '${day.day}',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: DARK_GREY_COLOR,
-              ),
-            ),
-          );
-        },
-        // 오늘 날짜
-        todayBuilder: (context, day, focusedDay) {
-          return Center(
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300), // 부드러운 전환 시간
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: PRIMARY_COLOR, // 오늘 날짜: 항상 진한 색
-              ),
-              child: Center(
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        // 선택된 날짜
-        selectedBuilder: (context, day, focusedDay) {
-          final isToday = day.year == today.year &&
-              day.month == today.month &&
-              day.day == today.day;
 
-          if (isToday) {
-            // 선택된 날짜가 오늘인 경우, 항상 오늘의 스타일 유지
-            return Center(
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300), // 부드러운 전환 시간
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: PRIMARY_COLOR, // 진한 색
-                ),
-                child: Center(
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          } else {
-            // 선택된 날짜가 오늘이 아닌 경우, 선택된 스타일 사용
-            return Center(
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 300), // 부드러운 전환 시간
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: LIGHT_PRIMARY_COLOR, // 연한 색
-                ),
-                child: Center(
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: DARK_GREY_COLOR,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
-        },
+        // 스타일: 선택된 날짜 (오늘이 아닌 경우만)
+        selectedDecoration: BoxDecoration(
+          color: LIGHT_PRIMARY_COLOR, // 연한 민트색
+          shape: BoxShape.circle,
+        ),
+        selectedTextStyle: TextStyle(
+          color: DARK_GREY_COLOR, // 회색 텍스트
+        ),
+
+        // 스타일: 기본 날짜
+        defaultDecoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        weekendDecoration: BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+
+        // 마커 스타일
+        markersMaxCount: 1,
+        markerDecoration: BoxDecoration(
+          color: Colors.grey, // 마커 색상: 흰색
+          shape: BoxShape.circle,
+        ),
       ),
+      headerStyle: HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
+      ),
+      eventLoader: (day) => markers[day] ?? [],
     );
   }
 }
