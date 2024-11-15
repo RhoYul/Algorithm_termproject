@@ -1,107 +1,49 @@
 import 'package:flutter/material.dart';
-import 'background_alarm.dart';
-import 'weekday_manager.dart';
-import 'event.dart';
+import 'package:provider/provider.dart';
+import 'package:term_project/components/bottom_navigation.dart';
+import 'package:term_project/cons/schedule_provider.dart'; // ScheduleProvider 파일 가져오기
+import 'package:term_project/cons/colors.dart';
+import 'package:term_project/alarm/background_alarm.dart'; // 알림 초기화 및 백그라운드 작업
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter 시스템 초기화
+  print("Initializing alarms..."); // 로그 추가
+  await initializeAlarms(); // 로컬 알림 초기화
+  print("Alarms initialized."); // 로그 추가
 
-  await initializeAlarms();
-  registerBackgroundAlarms();
+  print("Registering background alarms..."); // 로그 추가
+  registerBackgroundAlarms(); // 백그라운드 작업 등록
+  print("Background alarms registered."); // 로그 추가
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ScheduleProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ReminderScreen(),
-    );
-  }
-}
-
-class ReminderScreen extends StatefulWidget {
-  const ReminderScreen({super.key});
-
-  @override
-  _ReminderScreenState createState() => _ReminderScreenState();
-}
-
-class _ReminderScreenState extends State<ReminderScreen> {
-  final WeekdayManager weekdayManager = WeekdayManager(globalEvents);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Reminder App")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                final selectedTime = DateTime.now();
-                const windowSize = Duration(minutes: 10);
-
-                final eventsInWindow = globalEvents.where((event) {
-                  final timeDifference =
-                      event.time.difference(selectedTime).inMinutes;
-                  return timeDifference >= 0 &&
-                      timeDifference <= windowSize.inMinutes;
-                }).toList();
-
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("10분 내 일정"),
-                    content: Text(eventsInWindow.isEmpty
-                        ? "해당 시간 내에 일정이 없습니다."
-                        : eventsInWindow
-                            .map((e) => "${e.name} at ${e.time.toLocal()}")
-                            .join("\n")),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("닫기"),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: const Text("10분 내 이벤트 확인"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                int selectedWeekday = DateTime.now().weekday;
-                final eventsForToday =
-                    weekdayManager.getEventsForDay(selectedWeekday);
-
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("오늘의 이벤트"),
-                    content: Text(eventsForToday.isEmpty
-                        ? "오늘의 일정이 없습니다."
-                        : eventsForToday
-                            .map((e) => "${e.name} at ${e.time.toLocal()}")
-                            .join("\n")),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("닫기"),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: const Text("오늘의 이벤트 보기"),
-            ),
-          ],
+    return MaterialApp(
+      title: 'Navigation Example',
+      theme: ThemeData(
+        primaryColor: PRIMARY_COLOR,
+        scaffoldBackgroundColor: LIGHT_GREY_COLOR,
+        appBarTheme: AppBarTheme(
+          backgroundColor: PRIMARY_COLOR,
+          foregroundColor: Colors.white,
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: PRIMARY_COLOR,
+        ),
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: DARK_GREY_COLOR),
+          bodyMedium: TextStyle(color: DARK_GREY_COLOR),
         ),
       ),
+      home: BottomNavigationScreen(),
     );
   }
 }

@@ -31,7 +31,8 @@ class SubjectImportance {
       }
       double majorScore = subject.isMajor ? 1.0 : 0.8;
       double assignmentRatio = subject.assignmentRatio * 4.0;
-      double importance = (creditScore * majorScore) + preferenceScore + assignmentRatio;
+      double importance =
+          (creditScore * majorScore) + preferenceScore + assignmentRatio;
       subject.importance = importance;
     }
   }

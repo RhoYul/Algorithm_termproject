@@ -44,10 +44,12 @@ class AssignmentData {
 
       // If the schedule and deadline overlap, set recDeadline to one day in advance.
       if (calculatedRecDeadline.isAtSameMomentAs(scheduleDate)) {
-        calculatedRecDeadline = calculatedRecDeadline.subtract(Duration(days: 1));
+        calculatedRecDeadline =
+            calculatedRecDeadline.subtract(Duration(days: 1));
       }
       // If the schedule is behind (deadline - expectedPeriod), set recDeadline to that schedule date.
-      else if (deadline.difference(scheduleDate).inHours < expectedPeriod * 24) {
+      else if (deadline.difference(scheduleDate).inHours <
+          expectedPeriod * 24) {
         calculatedRecDeadline = scheduleDate;
       }
     }

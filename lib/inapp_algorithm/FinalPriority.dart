@@ -14,33 +14,38 @@ class FinalPriority {
     Map<String, double> subjectImportanceMap = {};
     for (var subject in subjects) {
       subjectImportanceMap[subject.subjectName] = subject.importance;
-
     }
 
     for (var assignment in assignments) {
       double assignmentImportance = assignment.importance;
       DateTime assignmentRecDeadline = assignment.recDeadline;
-      double subjectImportance = subjectImportanceMap[assignment.subjectName] ?? 0.0;
+      double subjectImportance =
+          subjectImportanceMap[assignment.subjectName] ?? 0.0;
 
-      double recDeadlineImportance = calcDeadlineImportance(assignmentRecDeadline, assignment.deadline, now);
+      double recDeadlineImportance = calcDeadlineImportance(
+          assignmentRecDeadline, assignment.deadline, now);
 
-      double finalPriority = subjectImportance + assignmentImportance + recDeadlineImportance;
+      double finalPriority =
+          subjectImportance + assignmentImportance + recDeadlineImportance;
       assignment.priority = finalPriority;
     }
   }
-  
-  double calcDeadlineImportance(DateTime recDeadline, DateTime deadline, DateTime currentDate) {
+
+  double calcDeadlineImportance(
+      DateTime recDeadline, DateTime deadline, DateTime currentDate) {
     double baseImportance = 2.5;
 
     int daysUntilDeadline = deadline.difference(currentDate).inDays;
     // if left duration is less than 3 day, scaling the importance
     if (daysUntilDeadline <= 3) {
       double scalingFactor = 3.0;
-      baseImportance += baseImportance * (1 - (daysUntilDeadline / 3)) * scalingFactor;
+      baseImportance +=
+          baseImportance * (1 - (daysUntilDeadline / 3)) * scalingFactor;
     } else {
       double totalDays = deadline.difference(recDeadline).inDays.toDouble();
       if (totalDays > 0) {
-        baseImportance += (baseImportance * (1 - (daysUntilDeadline / totalDays)));
+        baseImportance +=
+            (baseImportance * (1 - (daysUntilDeadline / totalDays)));
       }
     }
 

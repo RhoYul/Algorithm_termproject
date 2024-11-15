@@ -131,44 +131,54 @@ void main() {
   ];
 
   List<CalenderData> schedules = [
-    CalenderData(scheduleName: 'Holiday', scheduleDate: DateTime.now().add(Duration(days: 3))),
-    CalenderData(scheduleName: 'Meeting', scheduleDate: DateTime.now().add(Duration(days: 1))),
+    CalenderData(
+        scheduleName: 'Holiday',
+        scheduleDate: DateTime.now().add(Duration(days: 3))),
+    CalenderData(
+        scheduleName: 'Meeting',
+        scheduleDate: DateTime.now().add(Duration(days: 1))),
   ];
 
   // Update assignment importance and recDeadline
-  AssignmentImportance assignmentImportanceCalculator = AssignmentImportance(assignments, subjects);
+  AssignmentImportance assignmentImportanceCalculator =
+      AssignmentImportance(assignments, subjects);
   assignmentImportanceCalculator.calcImportance();
   assignmentImportanceCalculator.updateRecDeadlines(schedules);
 
   // Calculate final priority
-  FinalPriority finalPriorityCalculator = FinalPriority(subjects, assignments, schedules.map((e) => e.scheduleDate).toList());
+  FinalPriority finalPriorityCalculator = FinalPriority(
+      subjects, assignments, schedules.map((e) => e.scheduleDate).toList());
   finalPriorityCalculator.calcPriority();
 
   // Add tasks to TaskQueue and print priority
   TaskQueue taskQueue = TaskQueue();
   for (var assignment in assignments) {
     // Update priority before adding to the queue
-    double subjectImportance = subjects.firstWhere(
-        (subject) => subject.subjectName == assignment.subjectName,
-        orElse: () => SubjectData(
-              subjectName: 'Unknown',
-              midtermRatio: 0.0,
-              finalRatio: 0.0,
-              assignmentRatio: 0.0,
-              attendanceRatio: 0.0,
-              creditHours: 0,
-              isMajor: false,
-              preferenceLevel: 0,
-            )).importance;
+    double subjectImportance = subjects
+        .firstWhere((subject) => subject.subjectName == assignment.subjectName,
+            orElse: () => SubjectData(
+                  subjectName: 'Unknown',
+                  midtermRatio: 0.0,
+                  finalRatio: 0.0,
+                  assignmentRatio: 0.0,
+                  attendanceRatio: 0.0,
+                  creditHours: 0,
+                  isMajor: false,
+                  preferenceLevel: 0,
+                ))
+        .importance;
 
-    double recDeadlineImportance = finalPriorityCalculator.calcDeadlineImportance(
-        assignment.recDeadline, assignment.deadline, DateTime.now());
+    double recDeadlineImportance =
+        finalPriorityCalculator.calcDeadlineImportance(
+            assignment.recDeadline, assignment.deadline, DateTime.now());
 
-    double finalPriority = subjectImportance + assignment.importance + recDeadlineImportance;
+    double finalPriority =
+        subjectImportance + assignment.importance + recDeadlineImportance;
     assignment.priority = finalPriority; // Update priority value
 
     taskQueue.addTask(assignment);
-    print('Added to queue: ${assignment.subjectName}, Priority: ${assignment.priority}');
+    print(
+        'Added to queue: ${assignment.subjectName}, Priority: ${assignment.priority}');
   }
 
   // Print FIFO
@@ -176,21 +186,23 @@ void main() {
   while (taskQueue.queue.isNotEmpty) {
     AssignmentData? nextTask = taskQueue.getNextTask();
     if (nextTask != null) {
-      double subjectImportance = subjects.firstWhere(
-          (subject) => subject.subjectName == nextTask.subjectName,
-          orElse: () => SubjectData(
-                subjectName: 'Unknown',
-                midtermRatio: 0.0,
-                finalRatio: 0.0,
-                assignmentRatio: 0.0,
-                attendanceRatio: 0.0,
-                creditHours: 0,
-                isMajor: false,
-                preferenceLevel: 0,
-              )).importance;
+      double subjectImportance = subjects
+          .firstWhere((subject) => subject.subjectName == nextTask.subjectName,
+              orElse: () => SubjectData(
+                    subjectName: 'Unknown',
+                    midtermRatio: 0.0,
+                    finalRatio: 0.0,
+                    assignmentRatio: 0.0,
+                    attendanceRatio: 0.0,
+                    creditHours: 0,
+                    isMajor: false,
+                    preferenceLevel: 0,
+                  ))
+          .importance;
 
-      double recDeadlineImportance = finalPriorityCalculator.calcDeadlineImportance(
-          nextTask.recDeadline, nextTask.deadline, DateTime.now());
+      double recDeadlineImportance =
+          finalPriorityCalculator.calcDeadlineImportance(
+              nextTask.recDeadline, nextTask.deadline, DateTime.now());
 
       print('Assignment: ${nextTask.subjectName}, ${nextTask.assignmentName}');
       String formattedValue = subjectImportance.toStringAsFixed(2);
@@ -199,7 +211,8 @@ void main() {
       print('  Assignment Importance: ${formattedValue}');
       formattedValue = recDeadlineImportance.toStringAsFixed(2);
       print('  Deadline Importance: $formattedValue');
-      double finalPriority = subjectImportance + nextTask.importance + recDeadlineImportance;
+      double finalPriority =
+          subjectImportance + nextTask.importance + recDeadlineImportance;
       formattedValue = finalPriority.toStringAsFixed(2);
       print('  Final Priority: $formattedValue\n');
     }
